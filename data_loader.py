@@ -6,11 +6,11 @@ DATA_PATH = "data"
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 100
 
-def load_documents(path):
+def load_documents(path) -> list[Document]:
     document_loader = PyPDFDirectoryLoader(path)
     return document_loader.load()
 
-def split_documents(documents: list[Document]):
+def split_documents(documents: list[Document]) -> list[Document]:
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=CHUNK_SIZE,
         chunk_overlap=CHUNK_OVERLAP,
