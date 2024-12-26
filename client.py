@@ -7,6 +7,7 @@ from embedding_function import get_embedding_function
 from rag import query_and_response, query_only
 from llm import prompt_model
 from logger import get_logger
+from llm_utils import sys_prompts
 
 class TravelBuddyCLI():
     def __init__(self, 
@@ -24,7 +25,10 @@ class TravelBuddyCLI():
         self.chunk_overlap = chunk_overlap
         self.cli_commands = {"/bye": "Exit the CLI.",
                              "/help": "List all commands.",
-                             "/destination": "Ask for a destination recommendation."
+                             "/destination": "Ask for a destination recommendation.",
+                             "/travel_tips": "Ask for travel tips.",
+                             "/query": "Ask a general question.",
+                             "/update_db": "Update the data and database.",
                              }
         self.session_chat_history = []
         self.logger = get_logger("TravelBuddyCLI")
@@ -88,10 +92,10 @@ class TravelBuddyCLI():
         # Check if the data has been modified since the last check.
         last_modified_time = self._get_last_modified_time(directory = self.data_path)
         if self.last_checked_time is None or last_modified_time > self.last_checked_time:
-            self.last_checked_time = time.time()
-            self._export_last_checked_time()
             self._load_data()
             self._update_db()
+            self.last_checked_time = time.time()
+            self._export_last_checked_time()
         else:
             self.logger.info("Data has not been modified since last start.")
         
@@ -106,7 +110,18 @@ class TravelBuddyCLI():
                 print(response)
             elif user_input == "/destination":
                 query_text = input("What kind of destination are you looking for? ")
+                query_and_response(query_text, self.model_type, self.model_name, sys_prompt=sys_prompts["destination"])
+            elif user_input == "/travel_tips":
+                query_text = input("What travel tips do you need? ")
+                query_and_response(query_text, self.model_type, self.model_name, sys_prompt=sys_prompts["travel_tips"])
+            elif user_input == "/query":
+                query_text = input("Enter your query: ")
                 query_and_response(query_text, self.model_type, self.model_name)
+            elif user_input == "/update_db":
+                self._load_data()
+                self._update_db()
+                self.last_checked_time = time.time()
+                self._export_last_checked_time()
             elif user_input == "/help":
                 print("List of commands:")
                 for command, description in self.cli_commands.items():

@@ -34,7 +34,8 @@ def query_only(query_text: str = "",
 
 def query_and_response(query_text: str,
           model_type = "gemini",
-          model_name = "gemini-2.0-flash-exp"):
+          model_name = "gemini-2.0-flash-exp",
+          sys_prompt = "You are a helpful travel assistant. Do not use highlighted or bolded words (words like **title**), just use plain text."):
     """
     Creates formatted response based on the query text.
     Performs a RAG search on the database and returns a response based on the context and query text.
@@ -48,7 +49,7 @@ def query_and_response(query_text: str,
     # print(prompt)
 
     # Get the response from the specific model.
-    response_text = prompt_model(prompt, model_type, model_name)
+    response_text = prompt_model(prompt, model_type, model_name, sys_prompt)
 
     sources = [doc.metadata.get("id", None) for doc, _score in results]
     formatted_response = f"Response: {response_text}\nSources: {sources}"
