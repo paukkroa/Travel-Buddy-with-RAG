@@ -42,7 +42,8 @@ def create_chunk_ids(chunks) -> list[Document]:
 
     return chunks
 
-def create_or_update_chroma(chunks: list[Document]) -> None:
+def create_or_update_chroma(chunks: list[Document],
+                            model = "gemini") -> None:
     """
     Create chroma db if not exists. Add new documents if there are any.
 
@@ -53,7 +54,8 @@ def create_or_update_chroma(chunks: list[Document]) -> None:
     """
     # Load the existing database.
     db = Chroma(
-        persist_directory=CHROMA_PATH, embedding_function=get_embedding_function()
+        persist_directory=CHROMA_PATH, 
+        embedding_function=get_embedding_function(model=model)
     )
 
     # Calculate Page IDs.

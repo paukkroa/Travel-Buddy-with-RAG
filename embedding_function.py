@@ -10,6 +10,8 @@ def get_embedding_function(model="gemini"):
         embeddings = OpenAIEmbeddings(model="text-embedding-3-large", show_progress_bar=True)
     elif model == "gemini":
         embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001", show_progress_bar=True)
-    else:
+    elif model == "ollama":
         embeddings = SentenceTransformer('all-MiniLM-L6-v2')
+    else:
+        raise Exception(f"Model {model} not supported.")
     return embeddings
