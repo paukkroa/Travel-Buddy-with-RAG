@@ -2,9 +2,7 @@ from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema.document import Document
 
-DATA_PATH = "data"
-CHUNK_SIZE = 500
-CHUNK_OVERLAP = 100
+from client import DATA_PATH, CHUNK_SIZE, CHUNK_OVERLAP
 
 def load_documents(path) -> list[Document]:
     document_loader = PyPDFDirectoryLoader(path)

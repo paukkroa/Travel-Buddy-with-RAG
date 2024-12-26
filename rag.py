@@ -2,7 +2,7 @@ from langchain.vectorstores.chroma import Chroma
 from langchain.prompts import ChatPromptTemplate
 
 from embedding_function import get_embedding_function
-from create_or_update_db import CHROMA_PATH
+from client import CHROMA_PATH
 from llm import prompt_model
 
 PROMPT_TEMPLATE = """
