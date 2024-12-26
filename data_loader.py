@@ -10,7 +10,7 @@ def load_documents(path) -> list[Document]:
     document_loader = PyPDFDirectoryLoader(path)
     return document_loader.load()
 
-def split_documents(documents: list[Document]) -> list[Document]:
+def split_documents(documents: list[Document]) -> list:
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=CHUNK_SIZE,
         chunk_overlap=CHUNK_OVERLAP,
