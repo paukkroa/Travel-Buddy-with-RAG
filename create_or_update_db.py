@@ -1,11 +1,10 @@
-from langchain.vectorstores.chroma import Chroma
+from langchain_chroma import Chroma
 from langchain.schema.document import Document
 import os
 import shutil
 import hashlib
 
 from embedding_function import get_embedding_function
-from client import CHROMA_PATH
 
 def create_chunk_ids(chunks) -> list[Document]:
     """
@@ -34,7 +33,7 @@ def create_chunk_ids(chunks) -> list[Document]:
 
         # Calculate the chunk ID.
         chunk_id = f"{current_page_id}:{current_chunk_index}"
-        chunk_id = hashlib.md5(chunk_id.encode("utf-8")).hexdigest()
+        #chunk_id = hashlib.md5(chunk_id.encode("utf-8")).hexdigest()
         last_page_id = current_page_id
 
         # Add it to the page meta-data.
@@ -42,7 +41,8 @@ def create_chunk_ids(chunks) -> list[Document]:
 
     return chunks
 
-def create_or_update_chroma(chunks: list[Document],
+def create_or_update_chroma(chroma_path = "chroma", 
+                            chunks: list[Document] = [],
                             model = "gemini") -> None:
     """
     Create chroma db if not exists. Add new documents if there are any.
@@ -54,7 +54,7 @@ def create_or_update_chroma(chunks: list[Document],
     """
     # Load the existing database.
     db = Chroma(
-        persist_directory=CHROMA_PATH, 
+        persist_directory=chroma_path, 
         embedding_function=get_embedding_function(model=model)
     )
 
@@ -80,6 +80,6 @@ def create_or_update_chroma(chunks: list[Document],
     else:
         print("No new documents to add")
 
-def clear_database():
-    if os.path.exists(CHROMA_PATH):
-        shutil.rmtree(CHROMA_PATH)
+def clear_database(chroma_path = "chroma") -> None:
+    if os.path.exists(chroma_path):
+        shutil.rmtree(chroma_path)
