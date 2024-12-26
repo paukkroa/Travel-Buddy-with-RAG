@@ -169,3 +169,5 @@ database.ipynb
 rag-tutorial-v2/
 data/.DS_Store
 data/.DS_Store
+/data
+credentials.json
