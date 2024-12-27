@@ -33,6 +33,7 @@ class TravelBuddyCLI():
         self.session_chat_history = []
         self.logger = get_logger("TravelBuddyCLI")
         self.last_checked_path = "last_checked.txt"
+        self.query_k_results = 10
 
     def _get_last_modified_time(self, directory):
         """
@@ -110,10 +111,10 @@ class TravelBuddyCLI():
                 print(response)
             elif user_input == "/destination":
                 query_text = input("What kind of destination are you looking for? ")
-                query_and_response(query_text, self.model_type, self.model_name, sys_prompt=sys_prompts["destination"])
+                query_and_response(query_text, self.model_type, self.model_name, sys_prompt=sys_prompts["destination"], k=self.query_k_results)
             elif user_input == "/travel_tips":
                 query_text = input("What travel tips do you need? ")
-                query_and_response(query_text, self.model_type, self.model_name, sys_prompt=sys_prompts["travel_tips"])
+                query_and_response(query_text, self.model_type, self.model_name, sys_prompt=sys_prompts["travel_tips"], k=self.query_k_results)
             elif user_input == "/query":
                 query_text = input("Enter your query: ")
                 query_and_response(query_text, self.model_type, self.model_name)

@@ -15,7 +15,8 @@ Answer the question based on the above context: {question}
 """
 
 def query_only(query_text: str = "",
-               chroma_path = "chroma"):
+               chroma_path = "chroma",
+               k = 5):
     """
     Get relevant context from database based on the query text.
     """
@@ -25,7 +26,7 @@ def query_only(query_text: str = "",
                 embedding_function=embedding_function)
 
     # Search the DB.
-    results = db.similarity_search_with_score(query_text, k=5)
+    results = db.similarity_search_with_score(query_text, k=k)
 
     # Create the context text.
     context_text = "\n\n---\n\n".join([doc.page_content for doc, _score in results])
@@ -35,13 +36,14 @@ def query_only(query_text: str = "",
 def query_and_response(query_text: str,
           model_type = "gemini",
           model_name = "gemini-2.0-flash-exp",
-          sys_prompt = "You are a helpful travel assistant. Do not use highlighted or bolded words (words like **title**), just use plain text."):
+          sys_prompt = "You are a helpful travel assistant. Do not use highlighted or bolded words (words like **title**), just use plain text.",
+          k = 5):
     """
     Creates formatted response based on the query text.
     Performs a RAG search on the database and returns a response based on the context and query text.
     """
     # Get text only context for the query
-    results, context_text = query_only(query_text)
+    results, context_text = query_only(query_text, k=k)
 
     # Prepare the prompt.
     prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
@@ -52,6 +54,6 @@ def query_and_response(query_text: str,
     response_text = prompt_model(prompt, model_type, model_name, sys_prompt)
 
     sources = [doc.metadata.get("id", None) for doc, _score in results]
-    formatted_response = f"Response: {response_text}\nSources: {sources}"
+    formatted_response = f"{response_text}\n{sources}"
     print(formatted_response)
     return response_text
