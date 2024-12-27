@@ -5,13 +5,23 @@ from embedding_function import get_embedding_function
 from llm import prompt_model
 
 PROMPT_TEMPLATE = """
-Answer the question based only on the following context:
+You will be provided with a chat history and a context. You need to answer the question based on the context. Use the chat history to understand the conversation and provide a relevant response.
+
+---
+
+Answer the question based on the context provided below:
 
 {context}
 
 ---
 
-Answer the question based on the above context: {question}
+Use this chat history to understand the conversation:
+
+{chat_history}
+
+---
+
+Answer this question based on the above context and chat history: {question}
 """
 
 def query_only(query_text: str = "",
@@ -37,7 +47,8 @@ def query_and_response(query_text: str,
           model_type = "gemini",
           model_name = "gemini-2.0-flash-exp",
           sys_prompt = "You are a helpful travel assistant. Do not use highlighted or bolded words (words like **title**), just use plain text.",
-          k = 5):
+          k = 5,
+          chat_history = ""):
     """
     Creates formatted response based on the query text.
     Performs a RAG search on the database and returns a response based on the context and query text.
@@ -47,7 +58,7 @@ def query_and_response(query_text: str,
 
     # Prepare the prompt.
     prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
-    prompt = prompt_template.format(context=context_text, question=query_text)
+    prompt = prompt_template.format(context=context_text, question=query_text, chat_history=chat_history)
     # print(prompt)
 
     # Get the response from the specific model.
@@ -55,5 +66,4 @@ def query_and_response(query_text: str,
 
     sources = [doc.metadata.get("id", None) for doc, _score in results]
     formatted_response = f"TravelBuddy: {response_text}\nSources: {sources}\n"
-    print(formatted_response)
-    return response_text
+    return response_text, formatted_response
