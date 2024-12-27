@@ -39,6 +39,8 @@ class TravelBuddyCLI():
                              "/travel_tips": "Ask for travel tips.",
                              "/query": "Ask a general question.",
                              "/update_db": "Update the data and database.",
+                             "/change_user": "Change user or create a new user.",
+                             "/remove_user": "Remove a user and their data."
                              }
         self.logger = get_logger(f"{self.client_name}")
         self.last_checked_path = "last_checked.txt"
@@ -115,6 +117,7 @@ class TravelBuddyCLI():
             self.context_type = "last_n"
             self.context_length = 10
             db.create_chat(self.conn, self.chat_id, self.username, self.chat_description, self.context_type, self.context_length)
+            print(f"{self.client_name}: Welcome, {self.username}!")
         else:
             chat_info = db.get_chat_info(self.conn, self.chat_id)
             self.chat_id = chat_info["chat_id"]
@@ -122,7 +125,60 @@ class TravelBuddyCLI():
             self.chat_description = chat_info["chat_description"]
             self.context_type = chat_info["context_type"]
             self.context_length = chat_info["context_length"]
-            print(f"TravelBuddy: Welcome back, {self.username}!")
+            print(f"{self.client_name}: Welcome back, {self.username}!")
+
+    def _get_users(self):
+        users = db.get_all_chatnames(self.conn)
+        return users
+
+    def change_user(self):
+        action = input(f"{self.client_name}: Do you want to use an existing user (e) or create a new one (n) or exit? (e/n/*): ")
+        if action.lower() == "n":
+            self.username = input(f"{self.client_name}: Enter your name: ")
+            self.chat_id = hashlib.md5(self.username.encode()).hexdigest()
+            self.chat_description = f"Chat with {self.username}"
+            self.context_type = "last_n"
+            self.context_length = 10
+            db.create_chat(self.conn, self.chat_id, self.username, self.chat_description, self.context_type, self.context_length)
+            print(f"{self.client_name}: Welcome, {self.username}!")
+        elif action.lower() == "e":
+            users = self._get_users()
+            print("Available users:")
+            i = 0
+            for user in users:
+                print(f"{i+1}: {user}")
+                i += 1
+            user_index = int(input(f"{self.client_name}: Enter the number of the user you want to use: ")) - 1
+            self.username = users[user_index]
+            self.chat_id = hashlib.md5(self.username.encode()).hexdigest()
+            chat_info = db.get_chat_info(self.conn, self.chat_id)
+            self.chat_description = chat_info["chat_description"]
+            self.context_type = chat_info["context_type"]
+            self.context_length = chat_info["context_length"]
+            print(f"{self.client_name}: Welcome back, {self.username}!")
+        else:
+            print(f"{self.client_name}: Continuing as {self.username}.")
+            return
+
+        
+    def remove_user_and_data(self):
+        users = self._get_users()
+        print("Available users:")
+        i = 0
+        for user in users:
+            print(f"{i+1}: {user}")
+            i += 1
+        
+        user_index = int(input(f"{self.client_name}: Enter the number of the user you want to remove: ")) - 1
+        user = users[user_index]
+        chat_id = hashlib.md5(user.encode()).hexdigest()
+        if user == self.username:
+            print(f"{self.client_name}: You cannot remove the user you are currently using.")
+            return
+        action = input(f"{self.client_name}: Are you sure you want to remove user {user}? (y/N): ")
+        if action.lower() == "y":
+            db.delete_user_and_chat(self.conn, chat_id)
+            print(f"{self.client_name}: User {user} removed.")
 
     def prepare_data(self):
         self._update_last_checked_time()
@@ -196,6 +252,12 @@ class TravelBuddyCLI():
                 self._export_last_checked_time()
                 response = "Database updated."
                 print(f"{self.client_name}: {response}")
+
+            elif user_input == "/change_user":
+                self.change_user()
+
+            elif user_input == "/remove_user":
+                self.remove_user_and_data()
 
             # List all commands
             elif user_input == "/help":

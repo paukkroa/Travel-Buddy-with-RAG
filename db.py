@@ -242,3 +242,39 @@ def get_chat_info(conn: sqlite3.Connection, chat_id: str) -> dict:
     }
 
     return chat_info
+
+def get_all_chatnames(conn: sqlite3.Connection) -> list:
+    """
+    Get all chat names.
+    
+    :param conn: Connection object
+    :return: List of chat names
+    """
+    cursor = conn.execute('''
+    SELECT chat_name FROM D_CHAT
+    ''')
+    
+    chat_names = cursor.fetchall()
+    
+    return [chat_name[0] for chat_name in chat_names]
+
+def delete_user_and_chat(conn: sqlite3.Connection, chat_id: str) -> None:
+    """
+    Delete a user and their chat.
+    
+    :param conn: Connection object
+    :param chat_id: Chat ID
+    """
+    conn.execute('''
+    DELETE FROM F_CHAT_HISTORY WHERE chat_id = ?
+    ''', (chat_id,))
+    
+    conn.execute('''
+    DELETE FROM D_CHAT_SETTINGS WHERE chat_id = ?
+    ''', (chat_id,))
+    
+    conn.execute('''
+    DELETE FROM D_CHAT WHERE chat_id = ?
+    ''', (chat_id,))
+    
+    conn.commit()
