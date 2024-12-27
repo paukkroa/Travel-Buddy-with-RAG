@@ -103,20 +103,20 @@ class TravelBuddyCLI():
         print("TravelBuddy CLI started. Enter '/bye' to exit.\nList more commands with '/help'.")
         user_input = ""
         while user_input != "/bye":
-            user_input = input(": ")
+            user_input = input("You: ")
             if user_input not in self.cli_commands:
                 response = prompt_model(user_input, self.model_type, self.model_name)
                 self.session_chat_history.append(user_input)
                 self.session_chat_history.append(response)
-                print(response)
+                print("TravelBuddy: " + response)
             elif user_input == "/destination":
-                query_text = input("What kind of destination are you looking for? ")
+                query_text = input("TravelBuddy: What kind of destination are you looking for?\nYou: ")
                 query_and_response(query_text, self.model_type, self.model_name, sys_prompt=sys_prompts["destination"], k=self.query_k_results)
             elif user_input == "/travel_tips":
-                query_text = input("What travel tips do you need? ")
+                query_text = input("TravelBuddy: What travel tips do you need?\nYou: ")
                 query_and_response(query_text, self.model_type, self.model_name, sys_prompt=sys_prompts["travel_tips"], k=self.query_k_results)
             elif user_input == "/query":
-                query_text = input("Enter your query: ")
+                query_text = input("TravelBuddy: Enter your query.\nYou: ")
                 query_and_response(query_text, self.model_type, self.model_name)
             elif user_input == "/update_db":
                 self._load_data()
@@ -124,7 +124,7 @@ class TravelBuddyCLI():
                 self.last_checked_time = time.time()
                 self._export_last_checked_time()
             elif user_input == "/help":
-                print("List of commands:")
+                print("TravelBuddy: Here are all of the commands available:\n")
                 for command, description in self.cli_commands.items():
                     print(f"{command}: {description}")
             elif user_input == "/bye":
