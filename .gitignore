@@ -172,3 +172,4 @@ data/.DS_Store
 /data
 credentials.json
 last_checked.txt
+chat.db
