@@ -54,6 +54,6 @@ def query_and_response(query_text: str,
     response_text = prompt_model(prompt, model_type, model_name, sys_prompt)
 
     sources = [doc.metadata.get("id", None) for doc, _score in results]
-    formatted_response = f"{response_text}\n{sources}"
+    formatted_response = f"TravelBuddy: {response_text}\nSources: {sources}\n"
     print(formatted_response)
     return response_text
